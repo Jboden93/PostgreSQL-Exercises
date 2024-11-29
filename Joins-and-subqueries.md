@@ -50,3 +50,23 @@ ORDER BY
 	er.surname, er.firstname
 ;
 ```
+
+
+## Q4: Produce a list of all members, along with their recommender
+
+> How can you output a list of all members, including the individual who recommended them (if any)? Ensure that results are ordered by (surname, firstname). 
+
+```sql
+SELECT 
+	m.firstname, 
+	m.surname,
+	r.firstname, 
+	r.surname
+FROM
+	cd.members AS m
+LEFT JOIN 
+	cd.members AS r ON r.memid = m.recommendedby
+ORDER BY
+	m.surname, m.firstname 
+;
+```

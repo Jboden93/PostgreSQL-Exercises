@@ -98,7 +98,9 @@ WHERE
 > As part of a clearout of our database, we want to delete all bookings from the cd.bookings table. How can we accomplish this? 
 
 ```sql
-DELETE FROM cd.bookings
+DELETE 
+    FROM 
+        cd.bookings
 ;
 ```
 
@@ -109,7 +111,24 @@ DELETE FROM cd.bookings
 
 ```sql
 DELETE 
-    FROM cd.members
-    WHERE memid = 37
+    FROM 
+        cd.members
+    WHERE 
+        memid = 37
+;
+```
+
+
+## Q9: Delete based on a subquery
+
+> In our previous exercises, we deleted a specific member who had never made a booking. How can we make that more general, to delete all members who have never made a booking?
+
+
+```sql
+DELETE 
+    FROM 
+        cd.members
+    WHERE 
+        memid NOT IN (SELECT memid FROM cd.bookings)
 ;
 ```

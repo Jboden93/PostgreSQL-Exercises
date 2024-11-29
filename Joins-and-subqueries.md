@@ -34,3 +34,19 @@ ORDER BY b.starttime
 ```
 
 
+## Q3: Produce a list of all members who have recommended another member
+
+> How can you output a list of all members who have recommended another member? Ensure that there are no duplicates in the list, and that results are ordered by (surname, firstname). 
+
+```sql
+SELECT DISTINCT
+	er.firstname, 
+	er.surname
+FROM
+	cd.members AS ee
+JOIN 
+	cd.members AS er ON er.memid = ee.recommendedby
+ORDER BY 
+	er.surname, er.firstname
+;
+```

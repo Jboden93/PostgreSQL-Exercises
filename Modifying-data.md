@@ -101,3 +101,15 @@ WHERE
 DELETE FROM cd.bookings
 ;
 ```
+
+
+## Q8: Delete a member from the cd.members table
+
+> We want to remove member 37, who has never made a booking, from our database. How can we achieve that? 
+
+```sql
+DELETE 
+    FROM cd.members
+    WHERE memid = 37
+;
+```

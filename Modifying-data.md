@@ -39,3 +39,18 @@ INSERT INTO cd.facilities
 	VALUES ( (SELECT MAX(facid) FROM cd.facilities) + 1,  'Spa', 20, 30, 100000, 800)
 ;
 ```
+
+
+## Q4: Update some existing data
+
+> We made a mistake when entering the data for the second tennis court. The initial outlay was 10000 rather than 8000: you need to alter the data to fix the error. 
+
+```sql
+UPDATE 
+    cd.facilities
+SET 
+    initialoutlay = 10000
+WHERE 
+    name = 'Tennis Court 2'
+;
+```

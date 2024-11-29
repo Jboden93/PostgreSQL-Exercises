@@ -70,3 +70,27 @@ ORDER BY
 	m.surname, m.firstname 
 ;
 ```
+
+
+## Q5: Produce a list of all members who have used a tennis court
+
+> How can you produce a list of all members who have used a tennis court? Include in your output the name of the court, and the name of the member formatted as a single column. Ensure no duplicate data, and order by the member name followed by the facility name. 
+
+*|| operator could be used to concat strings instead. **Caveat: does not work in MySQL or SQL Server***
+
+```sql
+SELECT DISTINCT 
+	CONCAT(m.firstname, ' ', m.surname) AS member,
+	f.name AS facility
+FROM 
+	cd.bookings AS b
+JOIN 
+	cd.facilities AS f ON f.facid = b.facid
+JOIN
+	cd.members AS m ON m.memid = b.memid AND
+	F.name LIKE '%Tennis Court%'
+ORDER BY 
+    member ASC, facility ASC
+;
+```
+	

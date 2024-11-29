@@ -123,6 +123,11 @@ DELETE
 
 > In our previous exercises, we deleted a specific member who had never made a booking. How can we make that more general, to delete all members who have never made a booking?
 
+*Uncorrelated - Runs once, independently evaluates / executes the inner query. Generally faster & work best when subq result set can be reused.
+Correlated - Runs repeatedly, (dependently) evaluates for each row of the outer query. slower but can produce different subquery results depending on outer query row*
+ 
+#### Answer 1:
+> Uncorrelated subquery
 
 ```sql
 DELETE 
@@ -132,3 +137,18 @@ DELETE
         memid NOT IN (SELECT memid FROM cd.bookings)
 ;
 ```
+
+#### Answer 2:
+> Correlated subquery
+```sql
+DELETE 
+    FROM 
+        cd.members AS m
+    WHERE NOT EXISTS
+        (SELECT 1 FROM cd.bookings AS b
+        WHERE b.memid = m.memid) 
+;
+```
+*"SELECT 1" = placeholder. Doesn't matter what you select because the goal is to check for existence of rows rather than retrieve specific data. DB understands only checking for row existence. The 1 is used since it doesn't consume extra resources.*
+
+

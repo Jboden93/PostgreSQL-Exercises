@@ -93,4 +93,33 @@ ORDER BY
     member ASC, facility ASC
 ;
 ```
+
+
+## Q6: Produce a list of costly bookings
+
+> How can you produce a list of bookings on the day of 2012-09-14 which will cost the member (or guest) more than $30? Remember that guests have different costs to members (the listed costs are per half-hour 'slot'), and the guest user is always ID 0. Include in your output the name of the facility, the name of the member formatted as a single column, and the cost. Order by descending cost, and do not use any subqueries. 
+
+```sql
+SELECT
+	CONCAT(m.firstname, ' ', m.surname) AS member, 
+	f.name AS facility,
+	CASE
+		WHEN b.memid = 0 THEN b.slots * f.guestcost 
+		WHEN b.memid != 0 THEN b.slots * f.membercost 
+	END AS cost
+FROM 
+	cd.bookings AS b
+INNER JOIN 
+	cd.facilities AS f ON f.facid = b.facid
+INNER JOIN 
+    cd.members AS m ON m.memid = b.memid
+WHERE 
+	DATE(b.starttime) = '2012-09-14' AND
+		((b.memid = 0 AND b.slots * f.guestcost > 30) OR (b.memid != 0 AND b.slots * f.membercost > 30))	
+ORDER BY 
+    cost DESC
+;
+```
+
+
 	

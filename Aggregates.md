@@ -82,3 +82,24 @@ ORDER BY
     total_slots
 ;
 ```
+
+
+## Q6: List the total slots booked per facility per month
+
+> Produce a list of the total number of slots booked per facility per month in the year of 2012. Produce an output table consisting of facility id and slots, sorted by the id and month. 
+
+```sql
+SELECT
+	facid,
+	DATE_PART('MONTH', starttime) AS month, 
+	SUM(slots) AS total_slots
+FROM 
+	cd.bookings
+WHERE
+	DATE_PART('YEAR', starttime)::INTEGER = 2012
+GROUP BY 
+    facid, month
+;
+```
+
+*Automatic implicit conversion of ```DATEPART()``` (Int -> DP). But explicitly casting provides clarity & bp.* 

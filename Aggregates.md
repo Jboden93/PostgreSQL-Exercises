@@ -161,3 +161,36 @@ ORDER BY
     revenue
 ;
 ```
+
+
+## Q10:  Find facilities with a total revenue less than 1000
+
+> Produce a list of facilities with a total revenue less than 1000. Produce an output table consisting of facility name and revenue, sorted by revenue. Remember that there's a different cost for guests and members! 
+
+```sql
+WITH booking_revenue AS 
+(
+SELECT
+	f.name, 
+	SUM(CASE 
+            WHEN b.memid = 0 THEN b.slots * guestcost
+            WHEN b.memid != 0 THEN b.slots * membercost
+            ELSE 0
+	    END) AS revenue
+FROM 
+	cd.bookings AS b
+	LEFT JOIN cd.facilities AS f ON b.facid = f.facid
+GROUP BY 
+    f.name
+ORDER BY 
+    revenue
+)
+
+SELECT
+	* 
+FROM 
+	booking_revenue
+WHERE 
+	revenue < 1000
+;
+```

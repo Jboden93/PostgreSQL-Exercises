@@ -62,3 +62,23 @@ ORDER BY
     facid
 ;
 ```
+
+
+## Q5: List the total slots booked per facility in a given month
+
+> Produce a list of the total number of slots booked per facility in the month of September 2012. Produce an output table consisting of facility id and slots, sorted by the number of slots. 
+
+```sql
+SELECT
+	facid, 
+	SUM(slots) AS total_slots
+FROM 
+	cd.bookings
+WHERE 
+    DATE_TRUNC('month', starttime) = '2012-09-01'
+GROUP BY 
+	facid
+ORDER BY 
+    total_slots
+;
+```

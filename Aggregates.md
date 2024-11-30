@@ -138,3 +138,26 @@ ORDER BY
     facid
 ;
 ```
+
+
+## Q9: Find the total revenue of each facility
+
+> Produce a list of facilities along with their total revenue. The output table should consist of facility name and revenue, sorted by revenue. Remember that there's a different cost for guests and members! 
+
+```sql
+SELECT
+	f.name, 
+	SUM(CASE 
+            WHEN b.memid = 0 THEN b.slots * guestcost
+            WHEN b.memid != 0 THEN b.slots * membercost
+            ELSE 0
+	    END) AS revenue
+FROM 
+	cd.bookings AS b
+	LEFT JOIN cd.facilities AS f ON b.facid = f.facid
+GROUP BY 
+    f.name
+ORDER BY 
+    revenue
+;
+```

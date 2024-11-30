@@ -24,3 +24,24 @@ WHERE
     guestcost >= 10 
 ;
 ```
+
+
+## Q3: Count the number of recommendations each member makes.
+
+> Produce a count of the number of recommendations each member has made. Order by member ID. 
+
+```sql
+SELECT
+	recommendedby, 
+	COUNT(memid)
+FROM 
+	cd.members
+WHERE 
+    recommendedby IS NOT NULL
+GROUP BY
+	recommendedby
+ORDER BY 
+    1 ASC
+;
+```
+

@@ -167,6 +167,9 @@ ORDER BY
 
 > Produce a list of facilities with a total revenue less than 1000. Produce an output table consisting of facility name and revenue, sorted by revenue. Remember that there's a different cost for guests and members! 
 
+#### Answer 1:
+> CTE
+
 ```sql
 WITH booking_revenue AS 
 (
@@ -182,8 +185,6 @@ FROM
 	LEFT JOIN cd.facilities AS f ON b.facid = f.facid
 GROUP BY 
     f.name
-ORDER BY 
-    revenue
 )
 
 SELECT
@@ -192,5 +193,34 @@ FROM
 	booking_revenue
 WHERE 
 	revenue < 1000
+ORDER BY 
+    revenue
+;
+```
+
+#### Answer 2:
+> Subquery
+
+```sql
+SELECT
+	* 
+FROM
+(
+SELECT
+	f.name, 
+	SUM(CASE 
+		WHEN b.memid = 0 THEN b.slots * guestcost
+		WHEN b.memid != 0 THEN b.slots * membercost
+		ELSE 0
+	END) AS revenue
+	FROM 
+		cd.bookings AS b
+	LEFT JOIN cd.facilities AS f ON b.facid = f.facid
+	GROUP BY f.name
+) AS booking_revenue
+WHERE 
+	revenue < 1000
+ORDER 
+	BY revenue
 ;
 ```

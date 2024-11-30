@@ -103,3 +103,18 @@ GROUP BY
 ```
 
 *Automatic implicit conversion of ```DATEPART()``` (Int -> DP). But explicitly casting provides clarity & bp.* 
+
+
+## Q7: Find the count of members who have made at least one booking
+
+> Find the total number of members (including guests) who have made at least one booking. 
+
+```sql
+SELECT 
+	COUNT(DISTINCT memid)
+FROM
+	cd.bookings
+;
+```
+
+*```COUNT(DISTINCT xxx)``` syntactic sugar (Otherwise would need to pass Distinct table).*

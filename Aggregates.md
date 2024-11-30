@@ -224,3 +224,30 @@ ORDER
 	BY revenue
 ;
 ```
+
+
+### Q11: Output the facility id that has the highest number of slots booked
+
+> Output the facility id that has the highest number of slots booked. For bonus points, try a version without a LIMIT clause. This version will probably look messy! 
+
+```sql
+WITH total_slots AS 
+(
+SELECT
+	facid, 
+	SUM(slots) AS total_slots
+	FROM 
+		cd.bookings
+	GROUP BY 
+		facid
+)
+
+SELECT
+	facid,
+	total_slots
+FROM 
+	total_slots
+WHERE 
+	total_slots = (SELECT MAX(total_slots) FROM total_slots) 
+;
+```

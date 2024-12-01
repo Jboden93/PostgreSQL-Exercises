@@ -538,3 +538,39 @@ FROM
 WHERE rev_rank <=3
 ;
 ```
+
+
+## Q20: Classify facilities by value
+
+> Classify facilities into equally sized groups of high, average, and low based on their revenue. Order by classification and facility name. 
+
+```sql
+SELECT
+	name, 
+	CASE
+		WHEN tile = 1 THEN 'high'
+		WHEN tile = 2 THEN 'average'
+		WHEN tile = 3 THEN 'low'
+	END AS classification
+FROM
+	(SELECT
+		name,
+		NTILE(3) OVER(ORDER BY rev DESC) AS tile
+	FROM
+		(SELECT
+			b.facid, 
+			f.name AS name, 
+			SUM(CASE
+					WHEN memid = 0 THEN slots * guestcost
+					else slots * membercost
+				END) AS rev
+		FROM 
+			cd.bookings AS b 
+			JOIN cd.facilities AS f ON f.facid = b.facid
+		GROUP BY 
+			b.facid, f.name
+		) AS fac_rev
+	ORDER BY tile ASC, name ASC
+	) AS fac_tile
+;
+```

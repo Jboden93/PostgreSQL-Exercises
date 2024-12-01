@@ -451,6 +451,9 @@ WHERE
 
 > Produce a list of members (including guests), along with the number of hours they've booked in facilities, rounded to the nearest ten hours. Rank them by this rounded figure, producing output of first name, surname, rounded hours, rank. Sort by rank, surname, and first name. 
 
+#### Answer 1:
+> CTE
+
 ```sql
 WITH rndd_member_hours AS
 (
@@ -471,6 +474,34 @@ SELECT
 	RANK() OVER(ORDER BY hours DESC) AS rank
 FROM
 	rndd_member_hours
+ORDER BY 
+	rank, surname, firstname
+;
+```
+*Without specifying DP ROUND() will automatically round to nearest Int. Therefore to find nearest "10";
+**/10 -> RND -> \*10*** 
+
+#### Answer 2:
+> Subquery
+
+```sql
+SELECT
+	firstname,
+	surname, 
+	hours, 
+	RANK() OVER(ORDER BY hours DESC) AS rank
+FROM
+  	(
+  	SELECT
+		m.firstname,
+		m.surname,
+		ROUND(SUM(b.slots) * 0.5 / 10) * 10 AS hours
+  	FROM 
+		cd.bookings AS b
+	  	JOIN cd.members AS m ON m.memid = b.memid
+ 	 GROUP BY 
+	  	m.firstname, m.surname
+  	) AS rndd_member_hours
 ORDER BY 
 	rank, surname, firstname
 ;

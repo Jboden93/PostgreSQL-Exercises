@@ -445,3 +445,33 @@ WHERE
 	ranking = 1
 ;
 ```
+
+
+## Q18:  Rank members by (rounded) hours used
+
+> Produce a list of members (including guests), along with the number of hours they've booked in facilities, rounded to the nearest ten hours. Rank them by this rounded figure, producing output of first name, surname, rounded hours, rank. Sort by rank, surname, and first name. 
+
+```sql
+WITH rndd_member_hours AS
+(
+SELECT
+	m.firstname,
+	m.surname,
+	ROUND(SUM(b.slots) * 0.5 / 10) * 10 AS hours
+FROM 
+	cd.bookings AS b
+	JOIN cd.members AS m ON m.memid = b.memid
+GROUP BY 
+	m.firstname, m.surname
+)
+SELECT
+	firstname,
+	surname, 
+	hours, 
+	RANK() OVER(ORDER BY hours DESC) AS rank
+FROM
+	rndd_member_hours
+ORDER BY 
+	rank, surname, firstname
+;
+```

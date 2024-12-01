@@ -226,7 +226,7 @@ ORDER
 ```
 
 
-### Q11: Output the facility id that has the highest number of slots booked
+## Q11: Output the facility id that has the highest number of slots booked
 
 > Output the facility id that has the highest number of slots booked. For bonus points, try a version without a LIMIT clause. This version will probably look messy! 
 
@@ -236,10 +236,11 @@ WITH total_slots AS
 SELECT
 	facid, 
 	SUM(slots) AS total_slots
-	FROM 
-		cd.bookings
-	GROUP BY 
-		facid
+FROM 
+	cd.bookings
+GROUP BY 
+	facid
+>>>>>>> cb4b0b6e144dbe717337403f53e16bc6891d43db
 )
 
 SELECT
@@ -248,6 +249,75 @@ SELECT
 FROM 
 	total_slots
 WHERE 
-	total_slots = (SELECT MAX(total_slots) FROM total_slots) 
+
+	total_slots = (SELECT MAX(total_slots) FROM total_slots)
 ;
 ```
+
+
+## Q12: List the total slots booked per facility per month, part 2
+
+> Produce a list of the total number of slots booked per facility per month in the year of 2012. In this version, include output rows containing totals for all months per facility, and a total for all months for all facilities. The output table should consist of facility id, month and slots, sorted by the id and month. When calculating the aggregated values for all months and all facids, return null values in the month and facid columns.  
+
+#### Answer 1:
+> ```ROLLUP()```
+
+```sql
+SELECT 
+	facid, 
+	DATE_PART('month', starttime) AS month, 
+	SUM(slots) AS total_slots
+FROM 
+	cd.bookings
+WHERE 
+	DATE_PART('year', starttime)::INTEGER = 2012
+GROUP BY 
+	ROLLUP(facid, month)
+ORDER BY 
+	facid, month
+;
+```
+
+#### Answer 2:
+> UNION ALL/Subqueries
+
+```sql
+SELECT 
+	facid, 
+	DATE_PART('month', starttime) AS month, 
+	SUM(slots) AS total_slots
+FROM 
+	cd.bookings
+WHERE 
+	DATE_PART('year', starttime)::INTEGER = 2012
+GROUP BY 
+	facid, month
+
+UNION ALL
+
+SELECT 
+	facid, 
+	NULL, 
+	SUM(slots) AS total_slots
+FROM 
+	cd.bookings
+WHERE 
+	DATE_PART('year', starttime)::INTEGER = 2012
+GROUP BY 
+	facid
+
+UNION ALL
+
+SELECT 
+	NULL, 
+	NULL, 
+	SUM(slots) AS total_slots
+FROM 
+	cd.bookings
+WHERE 
+	DATE_PART('year', starttime)::INTEGER = 2012
+
+ORDER BY 1, 2
+;
+```
+

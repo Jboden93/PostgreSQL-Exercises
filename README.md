@@ -53,11 +53,11 @@ My answers to Alisdair Owen's [PostgreSQL Exercises](https://pgexercises.com)
 - [x] List facilities with more than 1000 slots booked
 - [x] Find the total revenue of each facility
 - [x] Find facilities with a total revenue less than 1000
-- [ ] Output the facility id that has the highest number of slots booked
-- [ ] List the total slots booked per facility per month, part 2
-- [ ] List the total hours booked per named facility
-- [ ] List each member's first booking after September 1st 2012
-- [ ] Produce a list of member names, with each row containing the total member count
+- [x] Output the facility id that has the highest number of slots booked
+- [x] List the total slots booked per facility per month, part 2
+- [x] List the total hours booked per named facility
+- [x] List each member's first booking after September 1st 2012
+- [x] Produce a list of member names, with each row containing the total member count
 - [ ] Produce a numbered list of members
 - [ ] Output the facility id that has the highest number of slots booked, again
 - [ ] Rank members by (rounded) hours used

@@ -240,6 +240,7 @@ FROM
 	cd.bookings
 GROUP BY 
 	facid
+>>>>>>> cb4b0b6e144dbe717337403f53e16bc6891d43db
 )
 
 SELECT
@@ -248,6 +249,7 @@ SELECT
 FROM 
 	total_slots
 WHERE 
+
 	total_slots = (SELECT MAX(total_slots) FROM total_slots)
 ;
 ```
@@ -320,4 +322,82 @@ ORDER BY 1, 2
 ```
 
 
+## Q13: List the total hours booked per named facility
 
+> Produce a list of the total number of hours booked per facility, remembering that a slot lasts half an hour. The output table should consist of the facility id, name, and hours booked, sorted by facility id. Try formatting the hours to two decimal places. 
+
+```sql
+SELECT
+	f.facid, 
+	f.name, 
+	ROUND(SUM(b.slots) * 0.5, 2) AS total_slot_hours
+FROM
+	cd.bookings AS b
+	JOIN cd.facilities AS f ON f.facid = b.facid
+GROUP BY 
+	f.facid, f.name
+ORDER BY 
+	f.facid, name
+;
+```
+
+
+## Q14: List each member's first booking after September 1st 2012
+
+> Produce a list of each member name, id, and their first booking after September 1st 2012. Order by member ID.
+
+```sql
+ SELECT
+	m.surname, 
+	m.firstname, 
+	m.memid, 
+	MIN(starttime) AS start_time
+	
+FROM
+	cd.bookings AS b
+	JOIN cd.members AS m ON m.memid = b.memid
+WHERE 
+	DATE(starttime) >= '2012-09-01' 
+GROUP BY 
+	m.surname, m.firstname,	m.memid 
+ORDER BY 
+	m.memid
+;
+```
+
+
+## Q15: Produce a list of member names, with each row containing the total member count
+
+> Produce a list of member names, with each row containing the total member count. Order by join date, and include guest members. 
+
+#### Answer 1:
+> Subquery
+
+```sql
+SELECT 
+	(SELECT COUNT(*) FROM cd.members) AS total_count,
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY
+	joindate
+;
+```
+
+#### Answer 2:
+> Window Function
+
+```sql
+SELECT 
+	COUNT(*) OVER() AS total_count,
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY
+	joindate
+;
+```
+
+*Frame of unrestricted / partitioned WF = whole result set* 

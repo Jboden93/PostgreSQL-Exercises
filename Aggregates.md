@@ -400,4 +400,109 @@ ORDER BY
 ;
 ```
 
-*Frame of unrestricted / partitioned WF = whole result set* 
+*Frame of unrestricted / unpartitioned WF = whole result set* 
+
+
+## Q16: Produce a numbered list of members
+
+> Produce a monotonically increasing numbered list of members (including guests), ordered by their date of joining. Remember that member IDs are not guaranteed to be sequential. 
+
+```sql 
+SELECT
+	ROW_NUMBER() OVER(ORDER BY joindate ASC),
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY 
+	joindate
+;
+```
+
+
+## Q17: Output the facility id that has the highest number of slots booked, again
+
+> Output the facility id that has the highest number of slots booked. Ensure that in the event of a tie, all tieing results get output.
+
+```sql
+WITH total_slots AS
+(SELECT 
+	facid,
+	SUM(slots) AS total,
+	DENSE_RANK() OVER(ORDER BY SUM(slots) DESC) AS ranking
+FROM 
+	cd.bookings
+GROUP BY 
+	facid
+)
+
+SELECT 
+	facid, 
+	total
+FROM
+	total_slots
+WHERE 
+	ranking = 1
+;
+```
+
+
+## Q18:  Rank members by (rounded) hours used
+
+> Produce a list of members (including guests), along with the number of hours they've booked in facilities, rounded to the nearest ten hours. Rank them by this rounded figure, producing output of first name, surname, rounded hours, rank. Sort by rank, surname, and first name. 
+
+#### Answer 1:
+> CTE
+
+```sql
+WITH rndd_member_hours AS
+(
+SELECT
+	m.firstname,
+	m.surname,
+	ROUND(SUM(b.slots) * 0.5 / 10) * 10 AS hours
+FROM 
+	cd.bookings AS b
+	JOIN cd.members AS m ON m.memid = b.memid
+GROUP BY 
+	m.firstname, m.surname
+)
+SELECT
+	firstname,
+	surname, 
+	hours, 
+	RANK() OVER(ORDER BY hours DESC) AS rank
+FROM
+	rndd_member_hours
+ORDER BY 
+	rank, surname, firstname
+;
+```
+*Without specifying DP ROUND() will automatically round to nearest Int. Therefore to find nearest "10";
+**/10 -> RND -> \*10*** 
+
+#### Answer 2:
+> Subquery
+
+```sql
+SELECT
+	firstname,
+	surname, 
+	hours, 
+	RANK() OVER(ORDER BY hours DESC) AS rank
+FROM
+  	(
+  	SELECT
+		m.firstname,
+		m.surname,
+		ROUND(SUM(b.slots) * 0.5 / 10) * 10 AS hours
+  	FROM 
+		cd.bookings AS b
+	  	JOIN cd.members AS m ON m.memid = b.memid
+ 	 GROUP BY 
+	  	m.firstname, m.surname
+  	) AS rndd_member_hours
+ORDER BY 
+	rank, surname, firstname
+;
+```

@@ -401,3 +401,20 @@ ORDER BY
 ```
 
 *Frame of unrestricted / unpartitioned WF = whole result set* 
+
+
+## Q16: Produce a numbered list of members
+
+> Produce a monotonically increasing numbered list of members (including guests), ordered by their date of joining. Remember that member IDs are not guaranteed to be sequential. 
+
+```sql 
+SELECT
+	ROW_NUMBER() OVER(ORDER BY joindate ASC),
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY 
+	joindate
+;
+```

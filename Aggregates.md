@@ -370,6 +370,9 @@ ORDER BY
 
 > Produce a list of member names, with each row containing the total member count. Order by join date, and include guest members. 
 
+#### Answer 1:
+> Subquery
+
 ```sql
 SELECT 
 	(SELECT COUNT(*) FROM cd.members) AS total_count,
@@ -381,3 +384,20 @@ ORDER BY
 	joindate
 ;
 ```
+
+#### Answer 2:
+> Window Function
+
+```sql
+SELECT 
+	COUNT(*) OVER() AS total_count,
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY
+	joindate
+;
+```
+
+*Frame of unrestricted / partitioned WF = whole result set* 

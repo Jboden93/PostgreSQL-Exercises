@@ -400,4 +400,4 @@ ORDER BY
 ;
 ```
 
-*Frame of unrestricted / partitioned WF = whole result set* 
+*Frame of unrestricted / unpartitioned WF = whole result set* 

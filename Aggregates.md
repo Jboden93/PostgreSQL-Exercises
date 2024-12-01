@@ -418,3 +418,30 @@ ORDER BY
 	joindate
 ;
 ```
+
+
+## Q17: Output the facility id that has the highest number of slots booked, again
+
+> Output the facility id that has the highest number of slots booked. Ensure that in the event of a tie, all tieing results get output.
+
+```sql
+WITH total_slots AS
+(SELECT 
+	facid,
+	SUM(slots) AS total,
+	DENSE_RANK() OVER(ORDER BY SUM(slots) DESC) AS ranking
+FROM 
+	cd.bookings
+GROUP BY 
+	facid
+)
+
+SELECT 
+	facid, 
+	total
+FROM
+	total_slots
+WHERE 
+	ranking = 1
+;
+```

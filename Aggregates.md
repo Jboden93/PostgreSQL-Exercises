@@ -365,3 +365,19 @@ ORDER BY
 ;
 ```
 
+
+## Q15: Produce a list of member names, with each row containing the total member count
+
+> Produce a list of member names, with each row containing the total member count. Order by join date, and include guest members. 
+
+```sql
+SELECT 
+	(SELECT COUNT(*) FROM cd.members) AS total_count,
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY
+	joindate
+;
+```

@@ -341,3 +341,27 @@ ORDER BY
 ;
 ```
 
+
+## Q14: List each member's first booking after September 1st 2012
+
+> Produce a list of each member name, id, and their first booking after September 1st 2012. Order by member ID.
+
+```sql
+ SELECT
+	m.surname, 
+	m.firstname, 
+	m.memid, 
+	MIN(starttime) AS start_time
+	
+FROM
+	cd.bookings AS b
+	JOIN cd.members AS m ON m.memid = b.memid
+WHERE 
+	DATE(starttime) >= '2012-09-01' 
+GROUP BY 
+	m.surname, m.firstname,	m.memid 
+ORDER BY 
+	m.memid
+;
+```
+

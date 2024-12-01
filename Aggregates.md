@@ -506,3 +506,35 @@ ORDER BY
 	rank, surname, firstname
 ;
 ```
+
+
+## Q19:  Find the top three revenue generating facilities
+
+> Produce a list of the top three revenue generating facilities (including ties). Output facility name and rank, sorted by rank and facility name.
+
+```sql
+SELECT
+	name, 
+	rev_rank
+FROM
+   (SELECT
+		name, 
+		DENSE_RANK() OVER(ORDER BY slot_rev DESC) AS rev_rank
+	FROM 
+		(SELECT
+			f.name AS name,
+			b.facid AS id,
+			SUM(CASE 
+					WHEN memid = 0 THEN guestcost * slots
+					ELSE membercost * slots 
+				END) AS slot_rev
+		FROM 
+			cd.bookings AS b
+			JOIN cd.facilities AS f ON b.facid = f.facid
+		GROUP BY 
+			b.facid, f.name
+			) AS fac_rev
+	) AS rev_rank
+WHERE rev_rank <=3
+;
+```

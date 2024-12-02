@@ -58,12 +58,12 @@ My answers to Alisdair Owen's [PostgreSQL Exercises](https://pgexercises.com)
 - [x] List the total hours booked per named facility
 - [x] List each member's first booking after September 1st 2012
 - [x] Produce a list of member names, with each row containing the total member count
-- [ ] Produce a numbered list of members
-- [ ] Output the facility id that has the highest number of slots booked, again
-- [ ] Rank members by (rounded) hours used
-- [ ] Find the top three revenue generating facilities
-- [ ] Classify facilities by value
-- [ ] Calculate the payback time for each facility
+- [x] Produce a numbered list of members
+- [x] Output the facility id that has the highest number of slots booked, again
+- [x] Rank members by (rounded) hours used
+- [x] Find the top three revenue generating facilities
+- [x] Classify facilities by value
+- [x] Calculate the payback time for each facility
 - [ ] Calculate a rolling average of total revenue
 
 ### 5. Date

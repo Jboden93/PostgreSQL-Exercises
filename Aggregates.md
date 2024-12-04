@@ -400,4 +400,246 @@ ORDER BY
 ;
 ```
 
-*Frame of unrestricted / partitioned WF = whole result set* 
+*Frame of unrestricted / unpartitioned WF = whole result set* 
+
+
+## Q16: Produce a numbered list of members
+
+> Produce a monotonically increasing numbered list of members (including guests), ordered by their date of joining. Remember that member IDs are not guaranteed to be sequential. 
+
+```sql 
+SELECT
+	ROW_NUMBER() OVER(ORDER BY joindate ASC),
+	firstname, 
+	surname
+FROM 
+	cd.members
+ORDER BY 
+	joindate
+;
+```
+
+
+## Q17: Output the facility id that has the highest number of slots booked, again
+
+> Output the facility id that has the highest number of slots booked. Ensure that in the event of a tie, all tieing results get output.
+
+```sql
+WITH total_slots AS
+(SELECT 
+	facid,
+	SUM(slots) AS total,
+	DENSE_RANK() OVER(ORDER BY SUM(slots) DESC) AS ranking
+FROM 
+	cd.bookings
+GROUP BY 
+	facid
+)
+
+SELECT 
+	facid, 
+	total
+FROM
+	total_slots
+WHERE 
+	ranking = 1
+;
+```
+
+
+## Q18:  Rank members by (rounded) hours used
+
+> Produce a list of members (including guests), along with the number of hours they've booked in facilities, rounded to the nearest ten hours. Rank them by this rounded figure, producing output of first name, surname, rounded hours, rank. Sort by rank, surname, and first name. 
+
+#### Answer 1:
+> CTE
+
+```sql
+WITH rndd_member_hours AS
+(
+SELECT
+	m.firstname,
+	m.surname,
+	ROUND(SUM(b.slots) * 0.5 / 10) * 10 AS hours
+FROM 
+	cd.bookings AS b
+	JOIN cd.members AS m ON m.memid = b.memid
+GROUP BY 
+	m.firstname, m.surname
+)
+SELECT
+	firstname,
+	surname, 
+	hours, 
+	RANK() OVER(ORDER BY hours DESC) AS rank
+FROM
+	rndd_member_hours
+ORDER BY 
+	rank, surname, firstname
+;
+```
+*Without specifying DP ROUND() will automatically round to nearest Int. Therefore to find nearest "10";
+**/10 -> RND -> \*10*** 
+
+#### Answer 2:
+> Subquery
+
+```sql
+SELECT
+	firstname,
+	surname, 
+	hours, 
+	RANK() OVER(ORDER BY hours DESC) AS rank
+FROM
+  	(
+  	SELECT
+		m.firstname,
+		m.surname,
+		ROUND(SUM(b.slots) * 0.5 / 10) * 10 AS hours
+  	FROM 
+		cd.bookings AS b
+	  	JOIN cd.members AS m ON m.memid = b.memid
+ 	 GROUP BY 
+	  	m.firstname, m.surname
+  	) AS rndd_member_hours
+ORDER BY 
+	rank, surname, firstname
+;
+```
+
+
+## Q19:  Find the top three revenue generating facilities
+
+> Produce a list of the top three revenue generating facilities (including ties). Output facility name and rank, sorted by rank and facility name.
+
+```sql
+SELECT
+	name, 
+	rev_rank
+FROM
+   (SELECT
+		name, 
+		DENSE_RANK() OVER(ORDER BY slot_rev DESC) AS rev_rank
+	FROM 
+		(SELECT
+			f.name AS name,
+			b.facid AS id,
+			SUM(CASE 
+					WHEN memid = 0 THEN guestcost * slots
+					ELSE membercost * slots 
+				END) AS slot_rev
+		FROM 
+			cd.bookings AS b
+			JOIN cd.facilities AS f ON b.facid = f.facid
+		GROUP BY 
+			b.facid, f.name
+			) AS fac_rev
+	) AS rev_rank
+WHERE rev_rank <=3
+;
+```
+
+
+## Q20: Classify facilities by value
+
+> Classify facilities into equally sized groups of high, average, and low based on their revenue. Order by classification and facility name. 
+
+```sql
+SELECT
+	name, 
+	CASE
+		WHEN tile = 1 THEN 'high'
+		WHEN tile = 2 THEN 'average'
+		WHEN tile = 3 THEN 'low'
+	END AS classification
+FROM
+	(SELECT
+		name,
+		NTILE(3) OVER(ORDER BY rev DESC) AS tile
+	FROM
+		(SELECT
+			b.facid, 
+			f.name AS name, 
+			SUM(CASE
+					WHEN memid = 0 THEN slots * guestcost
+					else slots * membercost
+				END) AS rev
+		FROM 
+			cd.bookings AS b 
+			JOIN cd.facilities AS f ON f.facid = b.facid
+		GROUP BY 
+			b.facid, f.name
+		) AS fac_rev
+	ORDER BY tile ASC, name ASC
+	) AS fac_tile
+;
+```
+
+
+## Q21: Calculate the payback time for each facility
+
+> Based on the 3 complete months of data so far, calculate the amount of time each facility will take to repay its cost of ownership. Remember to take into account ongoing monthly maintenance. Output facility name and payback time in months, order by facility name. Don't worry about differences in month lengths, we're only looking for a rough value here! 
+
+```sql
+SELECT
+	name, 
+	initial_outlay / (average_monthly_revenue - monthly_maintenance) AS payback_months
+FROM
+	(
+	SELECT 
+		f.name AS name, 
+		f.initialoutlay AS initial_outlay,
+		f.monthlymaintenance AS monthly_maintenance,
+		SUM(CASE
+				WHEN b.memid = 0 THEN b.slots * f.guestcost
+				ELSE b.slots * f.membercost
+			END) / 3.0 AS average_monthly_revenue	
+	FROM 
+		cd.bookings AS b
+		INNER JOIN cd.facilities AS f ON f.facid = b.facid
+	GROUP BY 
+		f.facid,
+		f.name
+	) AS components
+ORDER BY 
+	name ASC
+;
+```
+
+
+## Q22:  Calculate a rolling average of total revenue
+
+> For each day in August 2012, calculate a rolling average of total revenue over the previous 15 days. Output should contain date and revenue columns, sorted by the date. Remember to account for the possibility of a day having zero revenue. This one's a bit tough, so don't be afraid to check out the hint! 
+
+```sql
+SELECT 
+	date::date, 
+	revenue
+FROM
+	(
+	SELECT 
+		dategen.date AS date, 
+		AVG(daily_revenue.revenue) OVER(ORDER BY dategen.date ROWS 14 PRECEDING) AS revenue
+	FROM 
+		GENERATE_SERIES('2012-07-01'::date, '2012-08-31'::date, '1 days'::interval) AS dategen(date)
+		LEFT JOIN
+		(
+		SELECT
+			starttime::date AS date, 
+			NULLIF(SUM(CASE
+							WHEN b.memid = 0 THEN b.slots * f.guestcost
+							ELSE b.slots * f.membercost
+						END), 0) AS revenue
+		FROM 
+			cd.bookings AS b
+			INNER JOIN cd.facilities AS f ON f.facid = b.facid
+		GROUP BY starttime::date
+		) AS daily_revenue
+		ON daily_revenue.date = dategen.date
+	) AS "15dma"
+ WHERE date BETWEEN '2012-08-01' AND '2012-08-31'
+ ORDER BY date ASC
+;
+```
+
+*Result sets: 1. Complete date series, 2. Daily total revenue, 3. 15DMA, 4. Filtered 15DMA for Aug 12 only* 

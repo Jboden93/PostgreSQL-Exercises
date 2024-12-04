@@ -64,7 +64,7 @@ My answers to Alisdair Owen's [PostgreSQL Exercises](https://pgexercises.com)
 - [x] Find the top three revenue generating facilities
 - [x] Classify facilities by value
 - [x] Calculate the payback time for each facility
-- [ ] Calculate a rolling average of total revenue
+- [x] Calculate a rolling average of total revenue
 
 ### 5. Date
 

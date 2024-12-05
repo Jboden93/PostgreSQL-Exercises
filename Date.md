@@ -52,3 +52,20 @@ SELECT
     EXTRACT(day FROM date '2012-08-31')::integer
 ;
 ```
+
+
+## Q5: Work out the number of seconds between timestamps
+
+> Work out the number of seconds between the timestamps '2012-08-31 01:00:00' and '2012-09-02 00:00:00' 
+
+```sql
+SELECT
+    EXTRACT(epoch from(timestamp '2012-09-02 00:00:00' - timestamp '2012-08-31 01:00:00'))
+;
+```
+
+*Caveat = Postgres specific - will need to either calc manually or use dialect relevant function / library.
+**Epoch = ref point from which time is measured ("00:00:00 UTC on January 1, 1970"). Time since epoch is measured in seconds.***
+
+
+

@@ -30,3 +30,14 @@ SELECT
     CAST('2012-08-31 01:00:00' AS timestamp) - CAST('2012-07-30 01:00:00' AS timestamp) 
 ;
 ```
+
+
+## Q3: Generate a list of all the dates in October 2012
+
+> Produce a list of all the dates in October 2012. They can be output as a timestamp (with time set to midnight) or a date. 
+
+```sql
+SELECT 
+	GENERATE_SERIES(date '2012-10-01', date '2012-10-31', interval '1 day') 
+;
+```

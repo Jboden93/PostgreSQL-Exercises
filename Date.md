@@ -69,3 +69,16 @@ SELECT
 
 
 
+## Q6: Work out the number of days in each month of 2012
+
+> For each month of the year in 2012, output the number of days in that month. Format the output as an integer column containing the month of the year, and a second column containing an interval data type. 
+
+```sql
+SELECT 
+    EXTRACT('month' FROM timestamps) AS month, 
+    (timestamps + INTERVAL '1 month' - timestamps) AS days
+FROM
+	(SELECT 
+        GENERATE_SERIES('2012-01-01', '2012-12-31', INTERVAL '1 month') AS timestamps) AS time_period
+;
+```

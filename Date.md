@@ -41,3 +41,14 @@ SELECT
 	GENERATE_SERIES(date '2012-10-01', date '2012-10-31', interval '1 day') 
 ;
 ```
+
+
+## Q4:  Get the day of the month from a timestamp
+
+> Get the day of the month from the timestamp '2012-08-31' as an integer.
+
+```sql
+SELECT 
+    EXTRACT(day FROM date '2012-08-31')::integer
+;
+```

@@ -96,3 +96,22 @@ FROM
         timestamp '2012-02-11 01:00:00' AS eom) AS tssq
 ;
 ```
+
+
+## Q8: Work out the end time of bookings
+
+> Return a list of the start and end time of the last 10 bookings (ordered by the time at which they end, followed by the time at which they start) in the system. 
+
+```sql
+SELECT
+	starttime, 
+	starttime + slots * interval '30 minutes' AS endtime
+FROM 
+	cd.bookings
+ORDER BY 
+    endtime DESC, starttime DESC 
+LIMIT 
+    10
+;
+```
+*Caveat: Last 10 bookings = Tiered priority sort (latest ending > latest start) =/= latest start. LIMIT; therefore ignores potential duplicate cases.*

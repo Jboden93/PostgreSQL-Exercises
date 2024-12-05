@@ -115,3 +115,20 @@ LIMIT
 ;
 ```
 *Caveat: Last 10 bookings = Tiered priority sort (latest ending > latest start) =/= latest start. LIMIT; therefore ignores potential duplicate cases.*
+
+
+## Q9: Return a count of bookings for each month
+
+> Return a count of bookings for each month, sorted by month  
+
+```sql
+SELECT
+	DATE_TRUNC('months', starttime) as month,
+	COUNT(*)
+FROM 
+	cd.bookings
+GROUP BY 
+	DATE_TRUNC('months', starttime)
+ORDER BY month ASC
+;
+```

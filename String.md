@@ -25,3 +25,20 @@ WHERE
 	name LIKE 'Tennis%'
 ;
 ```
+
+
+## Q3: Perform a case-insensitive search
+
+> Perform a case-insensitive search to find all facilities whose name begins with 'tennis'. Retrieve all columns. 
+
+```sql
+SELECT
+	*	
+FROM 
+	cd.facilities
+WHERE
+	LOWER(name) LIKE 'tennis%'
+;
+```
+
+*Postgres ILIKE() operator can perform case **in**sensitive matching.*

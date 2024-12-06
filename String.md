@@ -10,3 +10,18 @@ FROM
 ;
 ```
 *"||" standard SQL concat operator.*
+
+
+## Q2: Find facilities by a name prefix
+
+> Find all facilities whose name begins with 'Tennis'. Retrieve all columns. 
+
+```sql
+SELECT
+	*
+FROM 
+	cd.facilities
+WHERE
+	name LIKE 'Tennis%'
+;
+```
